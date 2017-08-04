@@ -31,10 +31,9 @@
 
 const validName = function(value) {
 	return new Promise((res, rej) => {
-        console.info(value)
         const _value = value.trim()
 		if(/^[A-Z]{1}[a-z]{2,}/.test(_value)) {
-			res(console.info(value))
+			res()
 		} else {
 			rej("something wrong")
 		}
@@ -42,10 +41,9 @@ const validName = function(value) {
 }
 const validPass = function(value) {
 	return new Promise((res, rej) => {
-        console.info(value)
         const _value = value.trim()
 		if(/[0-9a-z]{8,}/i.test(_value)) {
-			res(console.info(value))
+			res()
 		} else {
 			rej("something wrong")
 		}
@@ -53,10 +51,9 @@ const validPass = function(value) {
 }
 const validTel = function(value) {
 	return new Promise((res, rej) => {
-        console.info(value)
         const _value = value.trim()
 		if(/^\+380[0-9]{9}/.test(_value)) {
-			res(console.info(value))
+			res()
 		} else {
 			rej("something wrong")
 		}
@@ -64,18 +61,49 @@ const validTel = function(value) {
 }
 const validEmail = function(value) {
 	return new Promise((res, rej) => {
-        console.info(value)
         const _value = value.trim()
-		// if(/[A-Z0-9\_\.]{1,}\@[a-z]{1,}\.[a-z]{1,}/gi.test(_value)) {
-			if(true) {
-			res(console.info(value))
+		if(/[A-Z0-9\_\.]{1,}\@[a-z]{1,}\.[a-z]{1,}/i.test(_value)) {
+			
+			res()
 		} else {
 			rej("something wrong")
 		}
 	})
 }
-const onBlur = function (event) {
-	console.log(this)
+
+const validAsync = function (event) {
+	validName(username.value)
+		.catch(() => { 
+			username.classList.add("red")
+			username.previousElementSibling.classList.add("error")
+			username.value = ""
+			username.placeholder = "use letters. First capital"
+      	})
+	validPass(password.value)
+		.catch(() => { 
+			password.classList.add("red")
+			password.previousElementSibling.classList.add("error")
+			password.value = ""
+			password.placeholder = "At least 8 numbers"
+      	})
+    validTel(tel.value)
+    	.catch(() => { 
+			tel.classList.add("red")
+			tel.previousElementSibling.classList.add("error")
+			tel.value = ""
+			tel.placeholder = "Start with +380"
+      	})
+    validEmail(email.value)
+    	.catch(() => { 
+			email.classList.add("red")
+			email.previousElementSibling.classList.add("error")
+			email.value = ""
+			email.placeholder = "example@mail.com"
+      	})
+
+}
+
+const onBlurSwitch = function (event) {
 	const { target: { dataset: { id } } } = event
 	switch (id) {
 		case "1": { 
@@ -85,7 +113,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-					submit.disabled="true"
+					
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -100,7 +128,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-					submit.disabled="true"
+					
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -115,7 +143,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-					submit.disabled="true"
+					
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -124,13 +152,13 @@ const onBlur = function (event) {
 		}
 		break;
 		case "4": {
-			validEmail(username.value)
+			validEmail(email.value)
 				.then(() => {
 					event.target.classList.remove("red")
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-					submit.disabled="true"
+					
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -138,21 +166,34 @@ const onBlur = function (event) {
       			})			
 
 		}
+		break;
 	}
 }
-login.addEventListener("blur", onBlur, true)
 
-const pall = function() {
+const pall = function(event) {
 	Promise.all([validName(username.value), validPass(password.value), validTel(tel.value), validEmail(email.value)])
-	.then(() => { submit.disabled=false })
+	.then(() => { 
+		submit.disabled=false;
+	})
 	.catch(() => { submit.disabled=true })
 } 
-submit.addEventListener("click", pall)
+const store = function (event) {
+	event.preventDefault()
+	const _user = {
+		name: username.value,
+		pass: password.value,
+		tel: tel.value,
+		email: email.value
+	}
+	localStorage.setItem("user", JSON.stringify(_user))
+	console.log(localStorage)
+}
 
+window.addEventListener("click", pall) // не особо элегантно, зато работает :)
+login.addEventListener("blur", onBlurSwitch, true)
+submit.addEventListener("click", store)
+submit.addEventListener("click", validAsync)
 
 </script> 
 </body>
 </html>
-
-
-Когда пользователь успешно зарегистрировался, то его данные сохраняются в виде JSON в localStorage. Должна быть валидация на странице, которая дожна быть организована с помощью Promise. Валидация должна проходить асинхронно при событии blur (выход из фокуса инпута), т.е. пользователь ввошел в фокус инпута (любого) и когда вышел из фокуса инпута, то должен сработать handler на событие blur в котором запустится процедура валидации организованной в Promise. Если данные в инпуте были верными, то ничего не происходит, когда неверные, то поле подсветится красным цветом и под ним или над ним будет находится текст с формулеровкой о том как нужно правильно заполнить поле чтобы оно стало валидным. Кнопка Submit должна быть с атрибутом disabled=true если где-то не валидный инпут, когда пользователь нажмет на нее, то также должна выполнится валидация всех инпутов вместе и подсветится красным те которые невалидны и атрибут кнопки перейдет в состояние disabled=true. Когда пользователь ввел везде все верно, тогда кнопка перейдет в состояние disabled=false. Изначально у нее статус disabled=false.

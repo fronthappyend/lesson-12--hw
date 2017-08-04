@@ -15,7 +15,7 @@
 	    <input type="text" id="tel" name="tel" placeholder="+380999999999" data-id="3"/>
 	   	<label for="email">Email</label>
 	    <input type="text" id="email" name="email" data-id="4"/>
-	    <button id="submit" type="submit" disabled="true">Login</button>
+	    <button id="submit" type="submit" >Login</button>
     </form>
 
 <style>
@@ -85,6 +85,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
+					submit.disabled="true"
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -99,6 +100,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
+					submit.disabled="true"
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -113,6 +115,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
+					submit.disabled="true"
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -127,6 +130,7 @@ const onBlur = function (event) {
 					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
+					submit.disabled="true"
         			event.target.classList.add("red")
         			event.target.previousElementSibling.classList.add("error")
       				event.target.value = ""
@@ -138,8 +142,13 @@ const onBlur = function (event) {
 }
 login.addEventListener("blur", onBlur, true)
 
-Promise.all([validName(username.value), validPass(password.value), validTel(tel.value), validEmail(email.value)])
-	.then(() => { submit.disabled = "false" });
+const pall = function() {
+	Promise.all([validName(username.value), validPass(password.value), validTel(tel.value), validEmail(email.value)])
+	.then(() => { submit.disabled=false })
+	.catch(() => { submit.disabled=true })
+} 
+submit.addEventListener("click", pall)
+
 
 </script> 
 </body>

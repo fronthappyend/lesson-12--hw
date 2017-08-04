@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
-	<link rel="stylesheet" href="./styles.css">
+	
 </head>
 <body>
     <form action="" id="login">
@@ -15,12 +15,15 @@
 	    <input type="text" id="tel" name="tel" placeholder="+380999999999" data-id="3"/>
 	   	<label for="email">Email</label>
 	    <input type="text" id="email" name="email" data-id="4"/>
-	    <button id="submit" type="submit">Login</button>
+	    <button id="submit" type="submit" disabled="true">Login</button>
     </form>
 
 <style>
 	.red {
-		border: 3px solid red;
+		border: 1px solid red;
+	}
+	.error {
+		color: red;
 	}
 </style>
 
@@ -33,7 +36,7 @@ const validName = function(value) {
 		if(/^[A-Z]{1}[a-z]{2,}/.test(_value)) {
 			res(console.info(value))
 		} else {
-			rej(alert("something wrong"))
+			rej("something wrong")
 		}
 	})
 }
@@ -44,7 +47,7 @@ const validPass = function(value) {
 		if(/[0-9a-z]{8,}/i.test(_value)) {
 			res(console.info(value))
 		} else {
-			rej(alert("something wrong"))
+			rej("something wrong")
 		}
 	})
 }
@@ -52,10 +55,10 @@ const validTel = function(value) {
 	return new Promise((res, rej) => {
         console.info(value)
         const _value = value.trim()
-		if(/^[+380]{1}[0-9]{9,}/.test(_value)) {
+		if(/^\+380[0-9]{9}/.test(_value)) {
 			res(console.info(value))
 		} else {
-			rej(alert("something wrong"))
+			rej("something wrong")
 		}
 	})
 }
@@ -63,10 +66,11 @@ const validEmail = function(value) {
 	return new Promise((res, rej) => {
         console.info(value)
         const _value = value.trim()
-		if(/[A-Z0-9\_\.]{1,}\@[a-z]{1,}\.[a-z]{1,}/gi.test(_value)) {
+		// if(/[A-Z0-9\_\.]{1,}\@[a-z]{1,}\.[a-z]{1,}/gi.test(_value)) {
+			if(true) {
 			res(console.info(value))
 		} else {
-			rej(alert("something wrong"))
+			rej("something wrong")
 		}
 	})
 }
@@ -74,57 +78,68 @@ const onBlur = function (event) {
 	console.log(this)
 	const { target: { dataset: { id } } } = event
 	switch (id) {
-		case 1: { 
+		case "1": { 
 			validName(username.value)
 				.then(() => {
-					this.classList.remove("red")
+					event.target.classList.remove("red")
+					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-        			this.classList.add("red")
-      				this.value = ""
-       				this.placeholder = "Should use letters. First capital"
+        			event.target.classList.add("red")
+        			event.target.previousElementSibling.classList.add("error")
+      				event.target.value = ""
+       				event.target.placeholder = "use letters. First capital"
       			})
 		}
 		break;
-		case 2: {
+		case "2": {
 			validPass(password.value)
 				.then(() => {
-					this.classList.remove("red")
+					event.target.classList.remove("red")
+					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-        			this.classList.add("red")
-      				this.value = ""
-       				this.placeholder = "At least 8 numbers"
+        			event.target.classList.add("red")
+        			event.target.previousElementSibling.classList.add("error")
+      				event.target.value = ""
+       				event.target.placeholder = "At least 8 numbers"
       			})
 		}
 		break;
-		case 3: {
+		case "3": {
 			validTel(tel.value)
 				.then(() => {
-					this.classList.remove("red")
+					event.target.classList.remove("red")
+					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-        			this.classList.add("red")
-      				this.value = ""
-       				this.placeholder = "Start with +380"
+        			event.target.classList.add("red")
+        			event.target.previousElementSibling.classList.add("error")
+      				event.target.value = ""
+       				event.target.placeholder = "Start with +380"
       			})
 		}
 		break;
-		case 4: {
+		case "4": {
 			validEmail(username.value)
 				.then(() => {
-					this.classList.remove("red")
+					event.target.classList.remove("red")
+					event.target.previousElementSibling.classList.remove("error")
 				})
 				.catch(() => { 
-        			this.classList.add("red")
-      				this.value = ""
-       				this.placeholder = "example@mail.com"
+        			event.target.classList.add("red")
+        			event.target.previousElementSibling.classList.add("error")
+      				event.target.value = ""
+       				event.target.placeholder = "example@mail.com"
       			})			
 
 		}
 	}
 }
-login.addEventListener("blur", onBlur)
+login.addEventListener("blur", onBlur, true)
+
+Promise.all([validName(username.value), validPass(password.value), validTel(tel.value), validEmail(email.value)])
+	.then(() => { submit.disabled = "false" });
 
 </script> 
 </body>
